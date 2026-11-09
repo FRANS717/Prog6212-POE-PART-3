@@ -1,0 +1,18 @@
+# Keep the Docker build context small and free of local build output, secrets and repo metadata.
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/*.user
+**/node_modules/
+**/TestResults/
+.git/
+.github/
+docs/
+tests/
+**/appsettings.Development.json
+**/secrets.json
+**/.env
+Dockerfile
+.dockerignore
+README.md

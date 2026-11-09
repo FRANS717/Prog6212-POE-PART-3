@@ -1,0 +1,77 @@
+@model EventEnrolmentsViewModel
+@{
+    ViewData["Title"] = $"Enrolments · {Model.Event.Name}";
+    ViewData["Tab"] = "enrolments";
+    var counts = ViewData["Counts"] as Dictionary<string, int> ?? [];
+    var total = counts.Values.Sum();
+}
+
+<partial name="_OrganiserEventHeader" model="Model.Event" view-data="ViewData" />
+
+<div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="Filter by status">
+    <a asp-action="Index" asp-route-eventId="@Model.Event.EventId" class="btn btn-sm @(Model.StatusFilter is null ? "btn-rd" : "btn-rd-outline")">All (@total)</a>
+    @foreach (var s in RaceDayValues.EnrolmentStatuses)
+    {
+        <a asp-action="Index" asp-route-eventId="@Model.Event.EventId" asp-route-status="@s"
+           class="btn btn-sm @(Model.StatusFilter == s ? "btn-rd" : "btn-rd-outline")">@s (@counts.GetValueOrDefault(s))</a>
+    }
+</div>
+
+@if (ViewData["Error"] is string error)
+{
+    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> @error</div>
+}
+else if (Model.Enrolments.Count == 0)
+{
+    <div class="rd-empty text-center">
+        <i class="bi bi-people display-5 text-rd-accent"></i>
+        <h2 class="rd-section-title mt-3">@(Model.StatusFilter is null ? "No one has entered yet" : $"No {Model.StatusFilter.ToLower()} enrolments")</h2>
+        <p class="text-muted mb-0">Entries appear here as soon as Participants enrol.</p>
+    </div>
+}
+else
+{
+    <div class="rd-card rd-table-wrap">
+        <div class="table-responsive">
+            <table class="table rd-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Participant</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Entered on</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-end">Change status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Enrolments)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@e.ParticipantName</td>
+                            <td>@e.CategoryName</td>
+                            <td>@e.RegistrationDate.ToString("d MMM yyyy")</td>
+                            <td><partial name="_StatusBadge" model="e.Status" /></td>
+                            <td class="text-end">
+                                <form asp-action="UpdateStatus" asp-route-eventId="@Model.Event.EventId" asp-route-id="@e.EnrolmentId" method="post" class="d-inline-flex gap-1">
+                                    <input type="hidden" name="filter" value="@Model.StatusFilter" />
+                                    @if (e.Status != "Confirmed")
+                                    {
+                                        <button name="status" value="Confirmed" class="btn btn-sm btn-success" title="Confirm"><i class="bi bi-check-lg"></i> Confirm</button>
+                                    }
+                                    @if (e.Status != "Pending")
+                                    {
+                                        <button name="status" value="Pending" class="btn btn-sm btn-warning" title="Set to pending"><i class="bi bi-hourglass-split"></i></button>
+                                    }
+                                    @if (e.Status != "Cancelled")
+                                    {
+                                        <button name="status" value="Cancelled" class="btn btn-sm btn-outline-danger" title="Cancel entry"><i class="bi bi-x-lg"></i></button>
+                                    }
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

@@ -1,0 +1,158 @@
+/* RaceDay brand theme.
+   One set of colours, fonts and spacing used by every page, so nothing drifts between pages.
+   Headings use Barlow Condensed (a race-bib style face); body text uses Inter. */
+
+:root {
+    --rd-navy: #0b1d33;
+    --rd-navy-2: #132c4c;
+    --rd-orange: #ff5a1f;
+    --rd-orange-dark: #e2480f;
+    --rd-volt: #c8f31d;
+    --rd-bg: #f3f5f8;
+    --rd-card: #ffffff;
+    --rd-ink: #16202e;
+    --rd-muted: #5d6b7c;
+    --rd-border: #e2e7ee;
+    --rd-green: #198754;
+    --rd-green-bg: #e3f5ea;
+    --rd-amber: #a86500;
+    --rd-amber-bg: #fff2d6;
+    --rd-red: #c62828;
+    --rd-red-bg: #fde5e5;
+    --rd-radius: 14px;
+    --rd-shadow: 0 6px 20px rgba(11, 29, 51, 0.07);
+    --bs-primary: var(--rd-orange);
+    --bs-link-color: var(--rd-orange-dark);
+    --bs-link-hover-color: var(--rd-navy);
+}
+
+html { font-size: 15px; }
+@media (min-width: 768px) { html { font-size: 16px; } }
+
+body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--rd-bg);
+    color: var(--rd-ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main { flex: 1 0 auto; }
+
+h1, h2, h3, h4, h5, .rd-title, .rd-brand, .navbar-nav .nav-link, .btn {
+    font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+    letter-spacing: 0.02em;
+}
+
+.rd-title { font-weight: 800; text-transform: uppercase; font-size: clamp(1.9rem, 3vw, 2.6rem); line-height: 1.05; }
+.rd-section-title { font-weight: 700; text-transform: uppercase; font-size: 1.35rem; margin-bottom: 1rem; }
+.text-rd-accent { color: var(--rd-orange); }
+.text-muted { color: var(--rd-muted) !important; }
+
+/* ---------- Navigation ---------- */
+.rd-navbar {
+    background: linear-gradient(100deg, var(--rd-navy) 0%, var(--rd-navy-2) 100%);
+    border-bottom: 4px solid var(--rd-orange);
+    padding: 0.7rem 0;
+}
+.rd-brand { font-weight: 800; font-style: italic; font-size: 1.7rem; color: #fff !important; display: flex; align-items: center; gap: 0.5rem; }
+.rd-brand span:not(.rd-brand-mark) { color: var(--rd-orange); }
+.rd-brand-mark { background: var(--rd-orange); color: var(--rd-navy); width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; transform: skew(-10deg); }
+.rd-navbar .nav-link { color: rgba(255, 255, 255, 0.8) !important; font-weight: 600; font-size: 1.1rem; text-transform: uppercase; }
+.rd-navbar .nav-link:hover, .rd-navbar .nav-link.active { color: #fff !important; }
+.rd-navbar .nav-link.active { box-shadow: inset 0 -3px 0 var(--rd-volt); }
+.rd-role-pill { font-family: "Inter", sans-serif; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; background: var(--rd-volt); color: var(--rd-navy); border-radius: 999px; padding: 0.15rem 0.55rem; margin-left: 0.35rem; font-weight: 600; }
+.dropdown-item { font-family: "Inter", sans-serif; }
+
+/* ---------- Buttons ---------- */
+.btn { font-weight: 700; text-transform: uppercase; font-size: 1.05rem; border-radius: 10px; }
+.btn-sm { font-size: 0.95rem; }
+.btn-rd { background: var(--rd-orange); border: 2px solid var(--rd-orange); color: #fff; }
+.btn-rd:hover, .btn-rd:focus { background: var(--rd-orange-dark); border-color: var(--rd-orange-dark); color: #fff; }
+.btn-rd-outline { border: 2px solid var(--rd-navy); color: var(--rd-navy); background: transparent; }
+.btn-rd-outline:hover { background: var(--rd-navy); color: #fff; }
+.btn-role { border: 2px solid var(--rd-border); background: #fff; padding: 1rem; text-transform: none; font-family: "Inter", sans-serif; font-size: 1rem; color: var(--rd-ink); }
+.btn-check:checked + .btn-role { border-color: var(--rd-orange); background: #fff4ef; color: var(--rd-ink); box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.15); }
+.btn-check:checked + .btn-role i { color: var(--rd-orange); }
+
+/* ---------- Cards and panels ---------- */
+.rd-card { background: var(--rd-card); border: 1px solid var(--rd-border); border-radius: var(--rd-radius); box-shadow: var(--rd-shadow); }
+.rd-stat { padding: 1.25rem 1.4rem; border-left: 5px solid var(--rd-orange); }
+.rd-stat .rd-stat-value { font-family: "Barlow Condensed", sans-serif; font-size: 2.6rem; font-weight: 800; line-height: 1; }
+.rd-stat .rd-stat-label { color: var(--rd-muted); text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.08em; font-weight: 600; }
+.rd-empty { background: var(--rd-card); border: 2px dashed var(--rd-border); border-radius: var(--rd-radius); padding: 3rem 1.5rem; }
+
+/* ---------- Hero ---------- */
+.rd-hero {
+    background:
+        linear-gradient(115deg, rgba(11, 29, 51, 0.96) 0%, rgba(11, 29, 51, 0.85) 55%, rgba(255, 90, 31, 0.85) 100%),
+        repeating-linear-gradient(-55deg, transparent 0 22px, rgba(255, 255, 255, 0.04) 22px 44px);
+    color: #fff;
+    padding: 3.5rem 0 3rem;
+}
+.rd-hero h1 { font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 800; font-style: italic; text-transform: uppercase; line-height: 0.95; }
+.rd-hero h1 span { color: var(--rd-volt); }
+.rd-hero p { color: rgba(255, 255, 255, 0.82); max-width: 40rem; }
+
+/* ---------- Event cards ---------- */
+.rd-event-card { overflow: hidden; height: 100%; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.rd-event-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(11, 29, 51, 0.13); }
+.rd-event-banner { position: relative; aspect-ratio: 16 / 7; background: linear-gradient(135deg, var(--rd-navy) 0%, var(--rd-navy-2) 60%, var(--rd-orange) 140%); overflow: hidden; }
+.rd-event-banner img { width: 100%; height: 100%; object-fit: cover; }
+.rd-event-banner .rd-banner-icon { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 3.4rem; color: rgba(255, 255, 255, 0.25); }
+.rd-event-date { position: absolute; left: 0.9rem; bottom: 0.9rem; background: #fff; border-radius: 10px; text-align: center; padding: 0.3rem 0.65rem; line-height: 1; box-shadow: var(--rd-shadow); }
+.rd-event-date .rd-day { font-family: "Barlow Condensed", sans-serif; font-weight: 800; font-size: 1.7rem; color: var(--rd-ink); }
+.rd-event-date .rd-month { font-size: 0.7rem; text-transform: uppercase; font-weight: 600; color: var(--rd-orange-dark); letter-spacing: 0.08em; }
+.rd-type-tag { position: absolute; right: 0.9rem; top: 0.9rem; background: var(--rd-volt); color: var(--rd-navy); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.25rem 0.6rem; border-radius: 999px; }
+.rd-event-card h3 { font-size: 1.45rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem; }
+.rd-event-card h3 a { color: var(--rd-ink); text-decoration: none; }
+.rd-event-card h3 a::after { content: ""; position: absolute; inset: 0; }
+.rd-event-card { position: relative; }
+.rd-meta { color: var(--rd-muted); font-size: 0.9rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; }
+.rd-meta i { color: var(--rd-orange); }
+
+.rd-detail-banner { border-radius: var(--rd-radius); aspect-ratio: 21 / 8; }
+
+/* ---------- Status badges: one colour per status on every page ---------- */
+.rd-status { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; padding: 0.28rem 0.7rem; border-radius: 999px; background: #eceff3; color: var(--rd-muted); white-space: nowrap; }
+.rd-status-confirmed { background: var(--rd-green-bg); color: var(--rd-green); }
+.rd-status-pending { background: var(--rd-amber-bg); color: var(--rd-amber); }
+.rd-status-cancelled { background: var(--rd-red-bg); color: var(--rd-red); }
+
+/* ---------- Tables ---------- */
+.rd-table { margin: 0; }
+.rd-table thead th { background: var(--rd-navy); color: #fff; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.08em; font-weight: 600; border: 0; padding: 0.85rem 1rem; }
+.rd-table td { padding: 0.85rem 1rem; vertical-align: middle; border-color: var(--rd-border); }
+.rd-table tbody tr:hover { background: #fafbfc; }
+.rd-table-wrap { border-radius: var(--rd-radius); overflow: hidden; }
+.rd-position { font-family: "Barlow Condensed", sans-serif; font-weight: 800; font-size: 1.6rem; color: var(--rd-orange-dark); line-height: 1; }
+.rd-time { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 1.35rem; letter-spacing: 0.04em; }
+
+/* ---------- Forms ---------- */
+.form-label { font-weight: 600; font-size: 0.9rem; }
+.form-control, .form-select { border-radius: 10px; border-color: #cfd7e1; padding: 0.6rem 0.8rem; }
+.form-control:focus, .form-select:focus { border-color: var(--rd-orange); box-shadow: 0 0 0 0.2rem rgba(255, 90, 31, 0.18); }
+.input-validation-error { border-color: var(--rd-red) !important; }
+.field-validation-error { display: block; margin-top: 0.25rem; }
+.validation-summary-valid { display: none; }
+
+.rd-category-option { border: 2px solid var(--rd-border); border-radius: 12px; padding: 0.9rem 1rem; cursor: pointer; display: block; }
+.btn-check:checked + .rd-category-option { border-color: var(--rd-orange); background: #fff4ef; }
+
+.rd-avatar { width: 128px; height: 128px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: var(--rd-shadow); background: var(--rd-navy); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-family: "Barlow Condensed", sans-serif; font-size: 3rem; font-weight: 800; }
+
+.rd-flash { border-radius: 12px; border: 0; box-shadow: var(--rd-shadow); }
+
+/* ---------- Footer ---------- */
+.rd-footer { background: var(--rd-navy); color: #fff; padding: 1.5rem 0; margin-top: 2rem; font-size: 0.9rem; }
+.rd-brand-text { font-family: "Barlow Condensed", sans-serif; font-style: italic; letter-spacing: 0.03em; }
+.rd-brand-text span { color: var(--rd-orange); }
+.rd-footer-muted { color: rgba(255, 255, 255, 0.6); }
+
+.breadcrumb a { text-decoration: none; }
+
+/* ---------- Per-event Organiser tabs ---------- */
+.nav-pills { --bs-nav-pills-link-active-bg: var(--rd-navy); --bs-nav-link-color: var(--rd-navy); --bs-nav-link-hover-color: var(--rd-orange-dark); }
+.nav-pills .nav-link { font-family: "Barlow Condensed", sans-serif; font-weight: 700; text-transform: uppercase; font-size: 1.05rem; border-radius: 10px; }
+.nav-pills .nav-link.active { box-shadow: inset 0 -3px 0 var(--rd-orange); }

@@ -1,0 +1,30 @@
+@model EventSummary
+@{
+    var banner = Images.For(Model.BannerImageUrl);
+}
+<article class="rd-card rd-event-card">
+    <div class="rd-event-banner">
+        @if (banner is not null)
+        {
+            <img src="@banner" alt="Banner for @Model.Name" loading="lazy" />
+        }
+        else
+        {
+            <div class="rd-banner-icon"><i class="bi @RaceDay.Web.Helpers.StatusStyles.EventTypeIcon(Model.EventType)"></i></div>
+        }
+        <span class="rd-type-tag"><i class="bi @RaceDay.Web.Helpers.StatusStyles.EventTypeIcon(Model.EventType)"></i> @Model.EventType</span>
+        <div class="rd-event-date">
+            <div class="rd-day">@Model.Date.ToString("dd")</div>
+            <div class="rd-month">@Model.Date.ToString("MMM yyyy")</div>
+        </div>
+    </div>
+    <div class="p-3 p-lg-4">
+        <h3><a asp-controller="Events" asp-action="Details" asp-route-id="@Model.EventId">@Model.Name</a></h3>
+        <div class="rd-meta">
+            <span><i class="bi bi-geo-alt-fill"></i> @Model.Location</span>
+            <span><i class="bi bi-signpost-split-fill"></i> @Model.Distance.ToString("0.##") km</span>
+            <span><i class="bi bi-clock-fill"></i> @Model.Date.ToString("HH:mm")</span>
+        </div>
+        <div class="small text-muted mt-2">By @Model.OrganisationName</div>
+    </div>
+</article>

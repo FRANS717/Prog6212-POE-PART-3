@@ -1,0 +1,79 @@
+@model ResultsEntryViewModel
+@using RaceDay.Web.Helpers
+@{
+    ViewData["Title"] = $"Results · {Model.Event.Name}";
+    ViewData["Tab"] = "results";
+    var captured = Model.ResultsByEnrolment.Count;
+}
+
+<partial name="_OrganiserEventHeader" model="Model.Event" view-data="ViewData" />
+
+@if (!Model.EventHasHappened)
+{
+    <div class="alert alert-info"><i class="bi bi-info-circle"></i> This event starts on @Model.Event.Date.ToString("d MMMM yyyy 'at' HH:mm"). Results can be captured once it has taken place.</div>
+}
+
+@if (ViewData["Error"] is string error)
+{
+    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> @error</div>
+}
+else if (Model.Enrolments.Count == 0)
+{
+    <div class="rd-empty text-center">
+        <i class="bi bi-stopwatch display-5 text-rd-accent"></i>
+        <h2 class="rd-section-title mt-3">No entrants</h2>
+        <p class="text-muted mb-0">Results can be captured for Participants who entered this event.</p>
+    </div>
+}
+else
+{
+    <p class="text-muted">@captured of @Model.Enrolments.Count result@(Model.Enrolments.Count == 1 ? "" : "s") captured. Saving a row publishes it to the Participant's My Results page straight away.</p>
+    <div class="rd-card rd-table-wrap">
+        <div class="table-responsive">
+            <table class="table rd-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Participant</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Entry</th>
+                        <th scope="col" style="min-width: 22rem">Finish time (h:mm:ss) and position</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Enrolments)
+                    {
+                        Model.ResultsByEnrolment.TryGetValue(e.EnrolmentId, out var r);
+                        <tr>
+                            <td>
+                                <span class="fw-semibold">@e.ParticipantName</span>
+                                @if (r is not null)
+                                {
+                                    <div class="small"><partial name="_StatusBadge" model="r.Status" /></div>
+                                }
+                            </td>
+                            <td>@e.CategoryName</td>
+                            <td><partial name="_StatusBadge" model="e.Status" /></td>
+                            <td>
+                                <form asp-action="Save" asp-route-eventId="@Model.Event.EventId" method="post" class="d-flex flex-wrap gap-2 align-items-center">
+                                    <input type="hidden" name="EnrolmentId" value="@e.EnrolmentId" />
+                                    <input type="hidden" name="ResultId" value="@r?.ResultId" />
+                                    <input name="FinishTime" value="@(r is null ? "" : StatusStyles.FinishTime(r.FinishTime))" class="form-control form-control-sm" style="width: 7.5rem"
+                                           placeholder="1:45:30" pattern="\d{1,2}:[0-5]\d:[0-5]\d" required aria-label="Finish time for @e.ParticipantName" disabled="@(!Model.EventHasHappened)" />
+                                    <input name="FinishPosition" value="@r?.FinishPosition" type="number" min="1" class="form-control form-control-sm" style="width: 6rem"
+                                           placeholder="Pos." required aria-label="Finishing position for @e.ParticipantName" disabled="@(!Model.EventHasHappened)" />
+                                    <button type="submit" class="btn btn-sm @(r is null ? "btn-rd" : "btn-rd-outline")" disabled="@(!Model.EventHasHappened)">
+                                        <i class="bi @(r is null ? "bi-upload" : "bi-arrow-repeat")"></i> @(r is null ? "Publish" : "Update")
+                                    </button>
+                                    @if (r is not null)
+                                    {
+                                        <span class="small text-muted">@StatusStyles.Ordinal(r.FinishPosition) of @r.TotalFinishers</span>
+                                    }
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

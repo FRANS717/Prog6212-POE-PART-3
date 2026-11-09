@@ -1,0 +1,84 @@
+@model List<RaceResult>
+@using RaceDay.Web.Helpers
+@{
+    ViewData["Title"] = "My results";
+    var finished = Model.Where(r => r.Status == "Published").ToList();
+    var best = finished.OrderBy(r => r.FinishPosition).FirstOrDefault();
+}
+
+<div class="mb-4">
+    <h1 class="rd-title mb-1">My results</h1>
+    <p class="text-muted mb-0">Your race history across every completed event you entered.</p>
+</div>
+
+@if (ViewData["Error"] is string error)
+{
+    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> @error</div>
+}
+else if (Model.Count == 0)
+{
+    <div class="rd-empty text-center">
+        <i class="bi bi-stopwatch display-5 text-rd-accent"></i>
+        <h2 class="rd-section-title mt-3">No results yet</h2>
+        <p class="text-muted mb-0">Results appear here once the organiser publishes them after the event.</p>
+    </div>
+}
+else
+{
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-4">
+            <div class="rd-card rd-stat">
+                <div class="rd-stat-value">@finished.Count</div>
+                <div class="rd-stat-label">Races finished</div>
+            </div>
+        </div>
+        @if (best is not null)
+        {
+            <div class="col-sm-6 col-lg-4">
+                <div class="rd-card rd-stat">
+                    <div class="rd-stat-value">@StatusStyles.Ordinal(best.FinishPosition)</div>
+                    <div class="rd-stat-label">Best finish &middot; @best.EventName</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <div class="rd-card rd-stat">
+                    <div class="rd-stat-value">@StatusStyles.FinishTime(finished.Aggregate(TimeSpan.Zero, (total, r) => total + r.FinishTime))</div>
+                    <div class="rd-stat-label">Total time on course</div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="rd-card rd-table-wrap">
+        <div class="table-responsive">
+            <table class="table rd-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Event</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Finish time</th>
+                        <th scope="col">Position</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <td><a asp-controller="Events" asp-action="Details" asp-route-id="@r.EventId" class="fw-semibold">@r.EventName</a></td>
+                            <td>@r.EventDate.ToString("d MMM yyyy")</td>
+                            <td>@r.CategoryName</td>
+                            <td><span class="rd-time">@StatusStyles.FinishTime(r.FinishTime)</span></td>
+                            <td>
+                                <span class="rd-position">@StatusStyles.Ordinal(r.FinishPosition)</span>
+                                <span class="text-muted small d-block">out of @r.TotalFinishers finisher@(r.TotalFinishers == 1 ? "" : "s")</span>
+                            </td>
+                            <td><partial name="_StatusBadge" model="r.Status" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

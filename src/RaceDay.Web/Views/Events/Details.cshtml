@@ -1,0 +1,130 @@
+@model EventDetailsViewModel
+@using RaceDay.Web.Helpers
+@{
+    var ev = Model.Event;
+    ViewData["Title"] = ev.Name;
+    var banner = Images.For(ev.BannerImageUrl);
+    var session = Context.Session;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Events</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@ev.Name</li>
+    </ol>
+</nav>
+
+<div class="rd-event-banner rd-detail-banner mb-4">
+    @if (banner is not null)
+    {
+        <img src="@banner" alt="Banner for @ev.Name" />
+    }
+    else
+    {
+        <div class="rd-banner-icon"><i class="bi @StatusStyles.EventTypeIcon(ev.EventType)"></i></div>
+    }
+    <span class="rd-type-tag"><i class="bi @StatusStyles.EventTypeIcon(ev.EventType)"></i> @ev.EventType</span>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <h1 class="rd-title">@ev.Name</h1>
+        <div class="rd-meta fs-6 mb-3">
+            <span><i class="bi bi-calendar-event"></i> @ev.Date.ToString("dddd, d MMMM yyyy")</span>
+            <span><i class="bi bi-clock-fill"></i> @ev.Date.ToString("HH:mm")</span>
+            <span><i class="bi bi-geo-alt-fill"></i> @ev.Location</span>
+            <span><i class="bi bi-signpost-split-fill"></i> @ev.Distance.ToString("0.##") km</span>
+        </div>
+        <p class="text-muted">Organised by <strong>@ev.OrganisationName</strong></p>
+        <div class="rd-card p-4">
+            <h2 class="rd-section-title">About this event</h2>
+            <p class="mb-0" style="white-space: pre-line">@ev.Description</p>
+        </div>
+
+        @if (Model.IsOwner)
+        {
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <a class="btn btn-rd" asp-controller="OrganiserEvents" asp-action="Edit" asp-route-id="@ev.EventId"><i class="bi bi-pencil"></i> Edit event</a>
+                <a class="btn btn-rd-outline" asp-controller="Categories" asp-action="Index" asp-route-eventId="@ev.EventId"><i class="bi bi-tags"></i> Categories</a>
+                <a class="btn btn-rd-outline" asp-controller="OrganiserEnrolments" asp-action="Index" asp-route-eventId="@ev.EventId"><i class="bi bi-people"></i> Enrolments</a>
+                <a class="btn btn-rd-outline" asp-controller="OrganiserResults" asp-action="Index" asp-route-eventId="@ev.EventId"><i class="bi bi-stopwatch"></i> Results</a>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-5">
+        <div class="rd-card p-4">
+            <h2 class="rd-section-title">Categories</h2>
+
+            @if (ev.Categories.Count == 0)
+            {
+                <p class="text-muted mb-0">The organiser hasn't added categories yet. Check back soon.</p>
+            }
+            else if (Model.MyEnrolment is not null && Model.MyEnrolment.Status != "Cancelled")
+            {
+                @* Already entered: show the entry instead of the form. *@
+                <div class="alert alert-success mb-3"><i class="bi bi-check2-circle"></i> You're entered in <strong>@Model.MyEnrolment.CategoryName</strong>.</div>
+                <p class="mb-3">Status: <partial name="_StatusBadge" model="Model.MyEnrolment.Status" /></p>
+                <a asp-controller="Participant" asp-action="MyEvents" class="btn btn-rd-outline w-100">View my events</a>
+            }
+            else if (session.IsParticipant() && !Model.IsPast)
+            {
+                <form asp-action="Enrol" asp-route-id="@ev.EventId" method="post">
+                    <fieldset>
+                        <legend class="visually-hidden">Choose a category</legend>
+                        <div class="d-grid gap-2 mb-3">
+                            @foreach (var category in ev.Categories)
+                            {
+                                <input type="radio" class="btn-check" name="categoryId" id="cat-@category.CategoryId" value="@category.CategoryId" required />
+                                <label class="rd-category-option" for="cat-@category.CategoryId">
+                                    <strong>@category.Name</strong>
+                                    @if (category.MinAge is not null || category.MaxAge is not null)
+                                    {
+                                        <span class="badge text-bg-light ms-1">Age @(category.MinAge?.ToString() ?? "any")&ndash;@(category.MaxAge?.ToString() ?? "+")</span>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(category.Description))
+                                    {
+                                        <span class="d-block small text-muted">@category.Description</span>
+                                    }
+                                </label>
+                            }
+                        </div>
+                    </fieldset>
+                    @if (Model.MyEnrolment?.Status == "Cancelled")
+                    {
+                        <p class="small text-muted">Your previous entry was cancelled.</p>
+                    }
+                    <button type="submit" class="btn btn-rd w-100"><i class="bi bi-flag-fill"></i> Enter event</button>
+                </form>
+            }
+            else
+            {
+                <ul class="list-unstyled mb-3">
+                    @foreach (var category in ev.Categories)
+                    {
+                        <li class="py-2 border-bottom">
+                            <strong>@category.Name</strong>
+                            @if (category.MinAge is not null || category.MaxAge is not null)
+                            {
+                                <span class="badge text-bg-light ms-1">Age @(category.MinAge?.ToString() ?? "any")&ndash;@(category.MaxAge?.ToString() ?? "+")</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(category.Description))
+                            {
+                                <span class="d-block small text-muted">@category.Description</span>
+                            }
+                        </li>
+                    }
+                </ul>
+                @if (Model.IsPast)
+                {
+                    <p class="text-muted mb-0"><i class="bi bi-flag-fill"></i> This event has finished.</p>
+                }
+                else if (!session.IsLoggedIn())
+                {
+                    <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", new { id = ev.EventId })" class="btn btn-rd w-100">Log in to enter</a>
+                    <p class="small text-muted text-center mt-2 mb-0">No account? <a asp-controller="Account" asp-action="Register">Join as a Participant</a></p>
+                }
+            }
+        </div>
+    </div>
+</div>

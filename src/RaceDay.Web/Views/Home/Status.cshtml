@@ -1,0 +1,18 @@
+@model int
+@{
+    var (title, message, icon) = Model switch
+    {
+        404 => ("Off course", "We couldn't find that page. It may have been moved or the event deleted.", "bi-signpost-2"),
+        413 => ("File too big", "That upload is too large. Images must be 5 MB or smaller.", "bi-file-earmark-x"),
+        403 => ("Wrong lane", "Your account doesn't have access to that page.", "bi-sign-stop"),
+        _ => ("Something went wrong", "Please go back and try again.", "bi-cone-striped")
+    };
+    ViewData["Title"] = title;
+}
+
+<div class="rd-empty text-center py-5">
+    <i class="bi @icon display-3 text-rd-accent"></i>
+    <h1 class="rd-title mt-3">@title</h1>
+    <p class="lead text-muted">@message</p>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-rd">Back to events</a>
+</div>

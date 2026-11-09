@@ -1,0 +1,23 @@
+@model EventDetail
+@{
+    ViewData["Title"] = $"Delete {Model.Name}";
+    var enrolments = (int)(ViewData["EnrolmentCount"] ?? 0);
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="rd-card p-4 p-md-5 border-danger">
+            <h1 class="rd-title text-danger mb-3"><i class="bi bi-exclamation-octagon"></i> Delete event?</h1>
+            <p class="lead">You are about to delete <strong>@Model.Name</strong> on @Model.Date.ToString("d MMMM yyyy").</p>
+            <ul class="mb-4">
+                <li>@Model.Categories.Count categor@(Model.Categories.Count == 1 ? "y" : "ies") will be removed.</li>
+                <li>@enrolments enrolment@(enrolments == 1 ? "" : "s") and any captured results will be removed.</li>
+                <li>This cannot be undone.</li>
+            </ul>
+            <form asp-action="DeleteConfirmed" asp-route-id="@Model.EventId" method="post" class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Yes, delete it</button>
+                <a asp-action="Index" class="btn btn-rd-outline">Keep the event</a>
+            </form>
+        </div>
+    </div>
+</div>

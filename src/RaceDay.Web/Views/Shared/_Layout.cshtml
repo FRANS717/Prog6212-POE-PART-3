@@ -1,0 +1,107 @@
+﻿@{
+    var session = Context.Session;
+    var loggedIn = session.IsLoggedIn();
+    var isOrganiser = session.IsOrganiser();
+    var isParticipant = session.IsParticipant();
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    string Active(string c, string? a = null) => controller == c && (a is null || action == a) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] | RaceDay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark rd-navbar">
+            <div class="container">
+                <a class="navbar-brand rd-brand" asp-controller="@(isOrganiser ? "Organiser" : "Home")" asp-action="@(isOrganiser ? "Dashboard" : "Index")">
+                    <span class="rd-brand-mark"><i class="bi bi-lightning-charge-fill"></i></span>RACE<span>DAY</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto">
+                        @if (isOrganiser)
+                        {
+                            @* The Organiser menu: everything needed to run events. *@
+                            <li class="nav-item"><a class="nav-link @Active("Organiser")" asp-controller="Organiser" asp-action="Dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link @Active("OrganiserEvents")" asp-controller="OrganiserEvents" asp-action="Index"><i class="bi bi-calendar-event"></i> Manage events</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="OrganiserEvents" asp-action="Create"><i class="bi bi-plus-circle"></i> New event</a></li>
+                        }
+                        else
+                        {
+                            @* Guests and Participants browse events. Participants also get their own pages. *@
+                            <li class="nav-item"><a class="nav-link @Active("Home", "Index")" asp-controller="Home" asp-action="Index"><i class="bi bi-calendar-event"></i> Events</a></li>
+                            @if (isParticipant)
+                            {
+                                <li class="nav-item"><a class="nav-link @Active("Participant", "MyEvents")" asp-controller="Participant" asp-action="MyEvents"><i class="bi bi-ticket-perforated"></i> My events</a></li>
+                                <li class="nav-item"><a class="nav-link @Active("Participant", "MyResults")" asp-controller="Participant" asp-action="MyResults"><i class="bi bi-trophy"></i> My results</a></li>
+                            }
+                        }
+                    </ul>
+                    <ul class="navbar-nav align-items-lg-center">
+                        @if (loggedIn)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle @Active("Profile")" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle"></i> @session.FullName()
+                                    <span class="rd-role-pill">@session.Role()</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index"><i class="bi bi-person-gear"></i> My profile</a></li>
+                                    @if (isOrganiser)
+                                    {
+                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="Index"><i class="bi bi-eye"></i> View public events</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post">
+                                            <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right"></i> Log out</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a class="nav-link @Active("Account", "Login")" asp-controller="Account" asp-action="Login">Log in</a></li>
+                            <li class="nav-item ms-lg-2"><a class="btn btn-rd btn-sm" asp-controller="Account" asp-action="Register">Join RaceDay</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    @await RenderSectionAsync("Hero", required: false)
+
+    <main role="main" class="container py-4 py-lg-5">
+        <partial name="_FlashMessages" />
+        @RenderBody()
+    </main>
+
+    <footer class="rd-footer">
+        <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
+            <span><strong class="rd-brand-text">RACE<span>DAY</span></strong> &middot; Road running, walking and cycling events across South Africa</span>
+            <span class="rd-footer-muted">&copy; @DateTime.Now.Year RaceDay &middot; PROG6212 POE</span>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
